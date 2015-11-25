@@ -11,8 +11,11 @@ class Graph
 public:
 
     Graph(int v);
+    ~Graph();
     void addEdge(const int & v, const int & w);
-    void BFS(int src);
+    void BFS(int & src);
+    void DFS(int & src);
+    void DFSUtil(int v, bool visited[]);
 
 };
 
@@ -22,13 +25,18 @@ Graph::Graph(int v)
     this->adj = new list<int>[v+1];
 }
 
+Graph::~Graph()
+{
+    delete[] adj;
+}
+
 void Graph::addEdge(const int & v, const int & w)
 {
     this->adj[v].push_back(w);
     this->adj[w].push_back(v);
 }
 
-void Graph::BFS(int src)
+void Graph::BFS(int & src)
 {
     // Mark all the vertices as not visited 
     bool * visited = new bool[V];
@@ -51,7 +59,7 @@ void Graph::BFS(int src)
     {
         // Dequeue the vertex from queue and print it
         src = queue.front();
-        printf_s("%d", src);
+        printf_s("%d  ", src);
         queue.pop_front();
 
         // Get all adjacent vertices of the dequeued vertex src
@@ -66,6 +74,33 @@ void Graph::BFS(int src)
             }
         }
     }
+
+    //delete [] visited;
+}
+
+void Graph::DFSUtil(int v, bool visited[])
+{
+    // Mark the current node as visited and print it
+    visited[v] = true;
+    cout << v << " ";
+
+    // Recur for all the vertices adjacent to this vertex
+    list<int>::iterator i;
+    for (i = adj[v].begin(); i != adj[v].end(); ++i)
+    if (!visited[*i])
+        DFSUtil(*i, visited);
+}
+
+void Graph::DFS(int & src)
+{
+    // Mark all the vertices as not visited
+    bool * visited = new bool[this->V];
+    for (size_t i = 0; i <= this->V; i++)
+        visited[i] = false;
+
+    // Call the recursive helper function to print DFS traversal
+    DFSUtil(src, visited);
+
 }
 
 int main()
@@ -82,7 +117,14 @@ int main()
     graph->addEdge(6, 3);
     graph->addEdge(3, 8);
 
-    graph->BFS(1);
+    printf_s("BFS : \n");
+    int src(1);
+    graph->BFS(src);
+    printf_s("\n");
+
+    printf_s("DFS : \n");
+    src = 1;
+    graph->DFS(src);
 
     delete graph;
     return 0;
