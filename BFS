@@ -6,84 +6,84 @@ using namespace std;
 
 class Graph
 {
-	int V;
-	list<int> * adj;
+    int V;
+    list<int> * adj;
 public:
 
-	Graph(int V);
-	void addEdge(const int & v, const int & w);
-	void BFS(int src);
+    Graph(int v);
+    void addEdge(const int & v, const int & w);
+    void BFS(int src);
 
 };
 
-Graph::Graph(int V)
+Graph::Graph(int v)
 {
-	this->V = V;
-	this->adj = new list<int>[V];
+    this->V = v;
+    this->adj = new list<int>[v+1];
 }
 
 void Graph::addEdge(const int & v, const int & w)
 {
-	adj[v].push_back(w);
-	adj[w].push_back(v);
+    this->adj[v].push_back(w);
+    this->adj[w].push_back(v);
 }
 
 void Graph::BFS(int src)
 {
-	// Mark all the vertices as not visited 
-	bool * visited = new bool[V];
-	for (size_t i = 0; i < adj->size(); i++)
-	{
-		visited[i] = false;
-	}
+    // Mark all the vertices as not visited 
+    bool * visited = new bool[V];
+    for (size_t i = 0; i <= this->V; i++)
+    {
+        visited[i] = false;
+    }
 
-	// Create a queue for BFS
-	list<int> queue;
+    // Create a queue for BFS
+    list<int> queue;
 
-	// Mark the current node visited and enqueue it
-	visited[src] = true;
-	queue.push_back(src);
+    // Mark the current node visited and enqueue it
+    visited[src] = true;
+    queue.push_back(src);
 
-	// 'i' will used to get all adjacent vertices of a vertex
-	list<int>::iterator i;
+    // 'i' will used to get all adjacent vertices of a vertex
+    list<int>::iterator i;
 
-	while (!queue.empty())
-	{
-		// Dequeue the vertex from queue and print it
-		src = queue.front();
-		printf_s("%d", src);
-		queue.pop_front();
+    while (!queue.empty())
+    {
+        // Dequeue the vertex from queue and print it
+        src = queue.front();
+        printf_s("%d", src);
+        queue.pop_front();
 
-		// Get all adjacent vertices of the dequeued vertex src
-		// if a adjacent has not been visited , then mark it visited
-		// and enqueue it
-		for ( i = adj[src].begin(); i != adj[src].end(); i++)
-		{
-			if (!visited[*i])
-			{
-				visited[*i] = true;
-				queue.push_back(*i);
-			}
-		}
-	}
+        // Get all adjacent vertices of the dequeued vertex src
+        // if a adjacent has not been visited , then mark it visited
+        // and enqueue it
+        for (i = adj[src].begin(); i != adj[src].end(); i++)
+        {
+            if (!visited[*i])
+            {
+                visited[*i] = true;
+                queue.push_back(*i);
+            }
+        }
+    }
 }
 
 int main()
 {
-	Graph* graph = new Graph(8);
+    Graph* graph = new Graph(8);
 
-	graph->addEdge(1, 2);
-	graph->addEdge(1, 4);
-	graph->addEdge(1, 7);
-	graph->addEdge(2, 5);
-	graph->addEdge(5, 7);
-	graph->addEdge(2, 6);
-	graph->addEdge(6, 4);
-	graph->addEdge(6, 3);
-	//graph->addEdge(3, 8);
+    graph->addEdge(1, 2);
+    graph->addEdge(1, 4);
+    graph->addEdge(1, 7);
+    graph->addEdge(2, 5);
+    graph->addEdge(5, 7);
+    graph->addEdge(2, 6);
+    graph->addEdge(6, 4);
+    graph->addEdge(6, 3);
+    graph->addEdge(3, 8);
 
-	graph->BFS(1);
+    graph->BFS(1);
 
-	delete graph;
-	return 0;
+    delete graph;
+    return 0;
 }
