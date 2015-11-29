@@ -1,0 +1,97 @@
+// Detect cycle in Directed Graph
+#include <iostream>
+#include <list>
+
+using namespace std;
+
+class Graph
+{
+	int V;
+	list<int> * adj;
+	bool IsCyclicUtils(int v, bool * visited, bool * recStack);
+
+public:
+
+	Graph(int v);
+	~Graph();
+	void addEdge(const int & v, const int & w);
+	bool IsCyclic();
+	
+};
+
+Graph::Graph(int v)
+{
+	this->V = v;
+	this->adj = new list<int>[v + 1];
+}
+
+Graph::~Graph()
+{
+	delete[] adj;
+}
+
+void Graph::addEdge(const int & v, const int & w)
+{
+	this->adj[v].push_back(w);
+}
+
+bool Graph::IsCyclicUtils(int v, bool * visited, bool * recStack)
+{
+	if (!visited[v])
+	{
+		visited[v] = true;
+		recStack[v] = true;
+
+		list<int>::iterator i;
+		for ( i = adj[v].begin(); i != adj[v].end(); i++)
+		{
+			if (!visited[*i] && IsCyclicUtils(*i, visited, recStack))
+			{
+				return true;
+			}
+			else if (recStack[*i])
+			{
+				return true;
+			}
+		}
+	}
+	recStack[v] = true;
+	return false;
+}
+
+
+bool Graph::IsCyclic()
+{
+	bool * visited = new bool[this->V];
+	bool * recStack = new bool[this->V];
+	for (size_t i = 0; i < this->V; i++)
+	{
+		visited[i] = false;
+		recStack[i] = false;
+	}
+
+	for (size_t i = 0; i < this->V ; i++)
+	{
+		if (IsCyclicUtils( i, visited, recStack))
+			return true;
+	}
+
+	return true;
+
+}
+
+int main()
+{
+	Graph* graph = new Graph(4);
+
+	graph->addEdge(0, 1);
+	graph->addEdge(1, 2);
+	graph->addEdge(2, 0);
+	graph->addEdge(2, 3);
+
+	if (graph->IsCyclic())
+		printf_s("yes cyclic");
+
+	delete graph;
+	return 0;
+}
