@@ -1,1 +1,110 @@
+// Detect cycle in an Undirected Graph
+#include <iostream>
+#include <list>
 
+using namespace std;
+
+class Graph
+{
+    int V;
+    list<int> * adj;
+    bool IsCylicUtils(int u , bool visited[], int parent);
+
+public:
+
+    Graph(int v);
+    ~Graph();
+    void addEdge(const int & v, const int & w);
+    bool IsCylic();
+
+};
+
+Graph::Graph(int v)
+{
+    this->V = v;
+    this->adj = new list<int>[v + 1];
+}
+
+Graph::~Graph()
+{
+    delete[] adj;
+}
+
+void Graph::addEdge(const int & v, const int & w)
+{
+    this->adj[v].push_back(w);
+    this->adj[w].push_back(v);
+}
+
+// A recursive function that uses visited[] and parent to detect 
+// cycle in subgraph reachable from vertex v
+bool Graph::IsCylicUtils(int u, bool visited[], int parent)
+{
+    // Mark for all the current node as visited
+    visited[u] = true;
+
+    // Recur all the vertices adjacent to this vertex
+    list<int>::iterator i;
+    for ( i = adj[u].begin(); i != adj[u].end(); i++)
+    {
+        // if adjacent is not visited , then recur for that adjacent
+        if (!visited[*i])
+        {
+            if (IsCylicUtils(*i, visited, u))
+            {
+                return true;
+            }
+
+            // If an adjacent is visited and its not a parent of current vertex,
+            // then there is a cycle.
+            else if (*i != parent)
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+// Returns true if graph contains any cycle, else false
+bool Graph::IsCylic()
+{
+    // Mark all the vertices as not visited and not part of recursion stack
+    bool * visited = new bool[V];
+    for (size_t i = 1; i <= V; i++)
+        visited[i] = false;
+
+    // Call the recursive helper function to detec cycle in differnet DFS trees (connected adjoing nodes)
+    for (size_t u = 1; u <= V; u++)
+    {
+        if (!visited[u] && IsCylicUtils(u, visited, -1))
+            return true;
+    }
+    
+    return false;
+}
+
+int main()
+{
+    Graph* graph = new Graph(8);
+
+    graph->addEdge(1,2);
+    graph->addEdge(1,4);
+    graph->addEdge(1,7);
+    graph->addEdge(2,5);
+    graph->addEdge(2,6);
+    graph->addEdge(3,6);
+    graph->addEdge(3,8);
+    graph->addEdge(4,6);
+    graph->addEdge(5,7);
+
+    if (graph->IsCylic())
+        printf_s("Graph is cylic");
+    else
+        printf_s("Grpah is not cylic");
+
+
+    delete graph;
+    return 0;
+}
