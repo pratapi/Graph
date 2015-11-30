@@ -1,4 +1,4 @@
-// Detect cycle in Directed Graph
+// Detect cycle in an Directed Graph
 #include <iostream>
 #include <list>
 
@@ -6,92 +6,98 @@ using namespace std;
 
 class Graph
 {
-	int V;
-	list<int> * adj;
-	bool IsCyclicUtils(int v, bool * visited, bool * recStack);
+    int V;
+    list<int> * adj;
+    bool isCyclicUtil(int v, bool visited[], bool *recStack);
 
 public:
 
-	Graph(int v);
-	~Graph();
-	void addEdge(const int & v, const int & w);
-	bool IsCyclic();
-	
+    Graph(int v);
+    ~Graph();
+    void addEdge(const int & v, const int & w);
+    bool isCyclic();
+
 };
 
 Graph::Graph(int v)
 {
-	this->V = v;
-	this->adj = new list<int>[v + 1];
+    this->V = v;
+    this->adj = new list<int>[v + 1];
 }
 
 Graph::~Graph()
 {
-	delete[] adj;
+    delete[] adj;
 }
 
 void Graph::addEdge(const int & v, const int & w)
 {
-	this->adj[v].push_back(w);
+    this->adj[v].push_back(w);
+   // this->adj[w].push_back(v);
 }
 
-bool Graph::IsCyclicUtils(int v, bool * visited, bool * recStack)
+bool Graph::isCyclicUtil(int v, bool visited[], bool *recStack)
 {
-	if (!visited[v])
-	{
-		visited[v] = true;
-		recStack[v] = true;
+    if (visited[v] == false)
+    {
+        // Mark the current node as visited and part of recursion stack
+        visited[v] = true;
+        recStack[v] = true;
 
-		list<int>::iterator i;
-		for ( i = adj[v].begin(); i != adj[v].end(); i++)
-		{
-			if (!visited[*i] && IsCyclicUtils(*i, visited, recStack))
-			{
-				return true;
-			}
-			else if (recStack[*i])
-			{
-				return true;
-			}
-		}
-	}
-	recStack[v] = true;
-	return false;
+        // Recur for all the vertices adjacent to this vertex
+        list<int>::iterator i;
+        for (i = adj[v].begin(); i != adj[v].end(); ++i)
+        {
+            if (!visited[*i] && isCyclicUtil(*i, visited, recStack))
+                return true;
+            else if (recStack[*i])
+                return true;
+        }
+
+    }
+    recStack[v] = false;  // remove the vertex from recursion stack
+    return false;
 }
 
-
-bool Graph::IsCyclic()
+// Returns true if the graph contains a cycle, else false.
+bool Graph::isCyclic()
 {
-	bool * visited = new bool[this->V];
-	bool * recStack = new bool[this->V];
-	for (size_t i = 0; i < this->V; i++)
-	{
-		visited[i] = false;
-		recStack[i] = false;
-	}
+    // Mark all the vertices as not visited and not part of recursion
+    // stack
+    bool *visited = new bool[V];
+    bool *recStack = new bool[V];
+    for (int i = 0; i < V; i++)
+    {
+        visited[i] = false;
+        recStack[i] = false;
+    }
 
-	for (size_t i = 0; i < this->V ; i++)
-	{
-		if (IsCyclicUtils( i, visited, recStack))
-			return true;
-	}
+    // Call the recursive helper function to detect cycle in different
+    // DFS trees
+    for (int i = 0; i < V; i++)
+    if (isCyclicUtil(i, visited, recStack))
+        return true;
 
-	return true;
-
+    return false;
 }
 
 int main()
 {
-	Graph* graph = new Graph(4);
+    Graph* graph = new Graph(4);
 
-	graph->addEdge(0, 1);
-	graph->addEdge(1, 2);
-	graph->addEdge(2, 0);
-	graph->addEdge(2, 3);
+    graph->addEdge(0,1);
+    graph->addEdge(1,2);
+    graph->addEdge(2,3);
+    graph->addEdge(3,4);
+    graph->addEdge(4,5);
+    graph->addEdge(3,5);
 
-	if (graph->IsCyclic())
-		printf_s("yes cyclic");
+    if (graph->isCyclic())
+        printf_s("Graph is cylic");
+    else
+        printf_s("Grpah is not cylic");
 
-	delete graph;
-	return 0;
+
+    delete graph;
+    return 0;
 }
