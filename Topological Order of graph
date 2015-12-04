@@ -3,7 +3,6 @@
 #include <list>
 #include <stack>
 #define NINF INT_MIN
-#define vertex 6
 
 using namespace std;
 
@@ -95,7 +94,6 @@ void Graph::topologicalSortUtil(int v, bool visited[], stack<int> &Stack)
 void Graph::longestPath(int src)
 {
     stack<int> Stack;
-    int dist[vertex];
 
     // Mark all the vertices not visited
     bool * visited = new bool[V];
