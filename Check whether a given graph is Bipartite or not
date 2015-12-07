@@ -66,8 +66,11 @@ Graph::~Graph()
 
 void Graph::addEdge(const int & u, const int & v, const int & w)
 {
-    AdjListNode Node(v, w);
-    this->adj[u].push_back(Node);
+    AdjListNode tmp1(v, w);
+    this->adj[u].push_back(tmp1);
+    
+    AdjListNode tmp2(u, w);
+    this->adj[v].push_back(tmp2);
 }
 
 bool Graph::isBipartite(int src)
@@ -93,9 +96,17 @@ bool Graph::isBipartite(int src)
             AdjListNode node = *i;
             int tmp = node.GetV();
             trackingList.push(tmp);
-            if (colored[tmp] != colored[src] && colored[tmp] == "black")
+            if (colored[tmp] == colored[src])
+            {
+                return true;
+            }
+            if (colored[src] == "red")
             {
                 colored[tmp] = "blue";
+            }
+            else if (colored[src] == "blue")
+            {
+                colored[tmp] = "red";
             }
         }
     }
@@ -120,7 +131,8 @@ int main()
     graph->addEdge(6, 7, 0);
     graph->addEdge(7, 8, 0);
 
-    graph->isBipartite(1);
+    if (graph->isBipartite(1))
+        printf_s("true");
 
     delete graph;
     return 0;
