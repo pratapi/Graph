@@ -1,0 +1,127 @@
+// Check whether a given graph is Bipartite or not
+#include <iostream>
+#include <list>
+#include <queue>
+#define NINF INT_MIN
+#define vertex 8
+
+using namespace std;
+
+// Graph is represented using adjacency list. Every node of adjacency list
+// contains vertex number of the vertex to which edge connects. It also
+// contains weight of the edge 
+class AdjListNode
+{
+    int v;
+    int weight;
+
+public:
+    AdjListNode(int V, int Weight);
+    int GetV();
+    int GetWeight();
+};
+
+AdjListNode::AdjListNode(int V, int Weight)
+{
+    v = V;
+    weight = Weight;
+}
+
+int AdjListNode::GetV()
+{
+    return this->v;
+}
+
+int AdjListNode::GetWeight()
+{
+    return this->weight;
+}
+
+// Class to represent Graph through adjacency list
+class Graph
+{
+    int V; // No. of vertices
+    list<AdjListNode> * adj; // Pointer to an array containing adjacency list
+
+public:
+
+    Graph(int v);
+    ~Graph();
+    void addEdge(const int & u, const int & v, const int & w);
+    bool isBipartite(int src);
+
+};
+
+
+Graph::Graph(int v)
+{
+    this->V = v;
+    this->adj = new list<AdjListNode>[v];
+}
+
+Graph::~Graph()
+{
+    delete[] adj;
+}
+
+void Graph::addEdge(const int & u, const int & v, const int & w)
+{
+    AdjListNode Node(v, w);
+    this->adj[u].push_back(Node);
+}
+
+bool Graph::isBipartite(int src)
+{
+    // Create a colored array to keep track of Node coloring
+    string * colored = new string[vertex];
+    for (int i = 1; i < vertex; i++)
+        colored[i] = "black";
+
+    queue<int> trackingList;
+    trackingList.push(src);
+    colored[src] = "red";
+
+    list<AdjListNode>::iterator i;
+
+    while (!trackingList.empty())
+    {
+        src = trackingList.front();
+        trackingList.pop();
+
+        for ( i = adj[src].begin(); i != adj[src].end(); i++)
+        {
+            AdjListNode node = *i;
+            int tmp = node.GetV();
+            trackingList.push(tmp);
+            if (colored[tmp] != colored[src] && colored[tmp] == "black")
+            {
+                colored[tmp] = "blue";
+            }
+        }
+    }
+    return false;
+}
+
+// Driver program
+int main()
+{
+    Graph* graph = new Graph(vertex);
+
+    graph->addEdge(1, 2, 0);
+    graph->addEdge(1, 4, 0);
+    graph->addEdge(1, 5, 0);
+    graph->addEdge(2, 3, 0);
+    graph->addEdge(2, 6, 0);
+    graph->addEdge(3, 4, 0);
+    graph->addEdge(3, 7, 0);
+    graph->addEdge(4, 8, 0);
+    graph->addEdge(5, 6, 0);
+    graph->addEdge(5, 8, 0);
+    graph->addEdge(6, 7, 0);
+    graph->addEdge(7, 8, 0);
+
+    graph->isBipartite(1);
+
+    delete graph;
+    return 0;
+}
