@@ -1,0 +1,103 @@
+// Program to find minimum number of dice throw required to reach last cell from first cell
+// of given snake and ladder board
+#include <iostream>
+#include <vector>
+#include <queue>
+// Size of board
+#define SIZE 30
+
+// An entry in queue used in BFS
+struct Node
+{
+    int cellNumber;   // vertex number 
+    int distanceFrom1stCell;// distance of this vertex from source
+};
+
+// This function returns minimum number of dice throws required to
+// Reach last cell from 0'th cell in a snake and ladder game.
+// move[] is an array of size N where N is no. of cells on board
+// If there is no snake or ladder from cell i, then move[i] is -1
+// Otherwise move[i] contains cell to which snake or ladder at i
+// takes to.
+int GetMinDiceThrows(std::vector<int> & moves)
+{
+    // Mark all the vertices not visited
+    std::vector<bool> visted(SIZE, false);
+
+    // create a queue for BFS
+    std::queue<Node> q;
+
+    // Mark the node 1 as visited and enqueue it 
+    visted[1] = true;
+    Node s = { 1, 0 }; 
+    q.push(s); // Enqueue 1'st vertex
+
+    // Do a BFS starting from vertex at index 1
+    Node qe; // A queue entry
+    while (!q.empty())
+    {
+        qe = q.front();
+        int cellnumber = qe.cellNumber;  // vertex no. of queue entry
+
+        // If front vertex is the destination vertex,
+        // we are done
+        if (cellnumber == SIZE)
+            break;
+
+        // Otherwise dequeue the front vertex and enqueue
+        // its adjacent vertices (or cell numbers reachable
+        // through a dice throw)
+        q.pop();
+        for (int i = cellnumber ; i < cellnumber+6; i++)
+        {
+            // if this cell is already visited, then ignore
+            // as visited
+            if (!visted[i])
+            {
+                // otherwise distance and mark it
+                Node a;
+                a.distanceFrom1stCell = qe.distanceFrom1stCell + 1;
+                visted[i] = true;
+
+                // Check if there a snake or ladder at 'i'
+                // then tail of snake or top of ladder
+                // become the adjacent of 'i'
+                if (moves[i] != -1)
+                {
+                    a.cellNumber = moves[i];
+                }
+                else
+                {
+                    a.cellNumber = i;
+                    q.push(a);
+                }
+            }
+        }
+
+    }
+
+
+    return qe.distanceFrom1stCell;
+}
+
+int main()
+{
+    // Construct a snake ladder board
+    std::vector<int> moves(SIZE, -1);
+
+    // Ladders
+    moves[3] = 22;
+    moves[5] = 8;
+    moves[11] = 26;
+    moves[20] = 29;
+
+    // Snakes
+    moves[27] = 1;
+    moves[21] = 9;
+    moves[19] = 7;
+    moves[17] = 4;
+
+    std::cout << "Min Dice throws required is " << GetMinDiceThrows(moves);
+
+    return 0;
+}
